@@ -37,14 +37,14 @@ $$
 For the power basis $1,\zeta,\ldots,\zeta^{n-1}$, the formalization proves
 
 $$
-\frac{1}{n}\operatorname{Tr}_{E/\mathbb{Q}}(a^\star b)
+\frac{1}{n}\mathrm{Tr}_{E/\mathbb{Q}}(a^\star b)
 =\sum_{i=0}^{n-1} a_i b_i,
 $$
 
 and, in particular,
 
 $$
-\frac{1}{n}\operatorname{Tr}_{E/\mathbb{Q}}(a^\star a)
+\frac{1}{n}\mathrm{Tr}_{E/\mathbb{Q}}(a^\star a)
 =\sum_{i=0}^{n-1} a_i^2.
 $$
 
