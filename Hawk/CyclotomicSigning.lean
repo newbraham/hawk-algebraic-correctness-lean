@@ -153,13 +153,62 @@ theorem cyclotomicTraceLength_coeffVector (k : ℕ)
 variable [CharZero E] [DecidableEq ι]
 
 /--
-**Cyclotomic signing correctness.**
+**Cyclotomic signing correctness for any positive integer modulus.**
 
 Besides integrality and reconstruction, the public quadratic form is identified
 with the actual Euclidean sum of squares of the coefficient vector of `x`.
 Thus the final square-root statement is a concrete geometric norm equality,
 rather than only an equality of abstract trace expressions.
 -/
+theorem signing_correctness_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)
+    [IsCyclotomicExtension {hawkConductor k} ℚ E]
+    (R : Subring E) (B : (Matrix ι ι E)ˣ)
+    (hB : Hawk.IntegralMat R (↑B : Matrix ι ι E))
+    (hBinv : Hawk.IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
+    (h x : ι → E) (hh : Hawk.IntegralVec R h)
+    (hx : Hawk.InSigningCosetMod m R (↑B : Matrix ι ι E) h x)
+    (a : ι → Fin (hawkDegree k) → ℚ)
+    (hxcoeff : x = coeffVector (E := E) k a) :
+    let Q := cyclotomicGram (E := E) k (↑B : Matrix ι ι E)
+    let w := Hawk.preimage B x
+    let s := Hawk.signatureMod m B h x
+    Hawk.IntegralVec R s ∧
+      h - w = (m : E) • s ∧
+      h - (m : E) • s = w ∧
+      (↑B : Matrix ι ι E) *ᵥ w = x ∧
+      cyclotomicPublicSq (E := E) k Q (h - (m : E) • s) = coeffSqR k a ∧
+      cyclotomicPublicLength (E := E) k Q (h - (m : E) • s) = coeffLength k a := by
+  letI := IsCyclotomicExtension.finiteDimensional {hawkConductor k} ℚ E
+  letI : StarRing E := cyclotomicStarRing (E := E) k
+  dsimp only
+  let Q := cyclotomicGram (E := E) k (↑B : Matrix ι ι E)
+  have hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E) := by
+    rfl
+  have hnorm (y : E) :
+      Hawk.normalizedTrace y = cyclotomicTraceR (E := E) k y := by
+    simp [Hawk.normalizedTrace, cyclotomicTraceR, normalizedTraceQ,
+      finrank_hawkCyclotomic (E := E) k, smul_eq_mul]
+  have htraceBridge (v : ι → E) :
+      Hawk.traceSq v = cyclotomicTraceSq (E := E) k v := by
+    unfold Hawk.traceSq cyclotomicTraceSq
+    rw [hnorm]
+    rfl
+  have hpublicBridge (v : ι → E) :
+      cyclotomicPublicSq (E := E) k Q v = Hawk.publicSq Q v := by
+    unfold cyclotomicPublicSq Hawk.publicSq
+    rw [← hnorm]
+    rfl
+  have hp := Hawk.signing_correctness_mod m hm R B hB hBinv Q hQ h x hh hx
+  have hxtrace : Hawk.traceSq x = coeffSqR k a := by
+    rw [htraceBridge, hxcoeff]
+    exact cyclotomicTraceSq_coeffVector (E := E) k a
+  refine ⟨hp.1, hp.2.1, hp.2.2.1, hp.2.2.2.1, ?_, ?_⟩
+  · rw [hpublicBridge]
+    exact hp.2.2.2.2.1.trans hxtrace
+  · unfold cyclotomicPublicLength coeffLength
+    rw [hpublicBridge, hp.2.2.2.2.1, hxtrace]
+
+/-- HAWK's coefficient-norm theorem is a modulus-two corollary. -/
 theorem signing_correctness_coeff_norm (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E]
     (R : Subring E) (B : (Matrix ι ι E)ˣ)
@@ -177,7 +226,26 @@ theorem signing_correctness_coeff_norm (k : ℕ)
       h - (2 : E) • s = w ∧
       (↑B : Matrix ι ι E) *ᵥ w = x ∧
       cyclotomicPublicSq (E := E) k Q (h - (2 : E) • s) = coeffSqR k a ∧
-      cyclotomicPublicLength (E := E) k Q (h - (2 : E) • s) = coeffLength k a := by
+      cyclotomicPublicLength (E := E) k Q (h - (2 : E) • s) = coeffLength k a :=
+  signing_correctness_mod_coeff_norm 2 (by decide) k R B hB hBinv h x hh hx a hxcoeff
+
+/-- The cyclotomic sign branch at general modulus requires `2h ∈ mR^ι`. -/
+theorem signing_correctness_sign_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)
+    [IsCyclotomicExtension {hawkConductor k} ℚ E]
+    (R : Subring E) (B : (Matrix ι ι E)ˣ)
+    (hBinv : Hawk.IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
+    (h x : ι → E) (hx : Hawk.InSigningCosetMod m R (↑B : Matrix ι ι E) h x)
+    (hdiv : Hawk.DivisibleVec R m ((2 : E) • h))
+    (a : ι → Fin (hawkDegree k) → ℚ)
+    (hxcoeff : x = coeffVector (E := E) k a) :
+    let Q := cyclotomicGram (E := E) k (↑B : Matrix ι ι E)
+    let s := Hawk.flippedSignatureMod m B h x
+    Hawk.IntegralVec R s ∧
+      h - (-Hawk.preimage B x) = (m : E) • s ∧
+      h - (m : E) • s = -Hawk.preimage B x ∧
+      (↑B : Matrix ι ι E) *ᵥ (-Hawk.preimage B x) = -x ∧
+      cyclotomicPublicSq (E := E) k Q (h - (m : E) • s) = coeffSqR k a ∧
+      cyclotomicPublicLength (E := E) k Q (h - (m : E) • s) = coeffLength k a := by
   letI := IsCyclotomicExtension.finiteDimensional {hawkConductor k} ℚ E
   letI : StarRing E := cyclotomicStarRing (E := E) k
   dsimp only
@@ -198,17 +266,17 @@ theorem signing_correctness_coeff_norm (k : ℕ)
     unfold cyclotomicPublicSq Hawk.publicSq
     rw [← hnorm]
     rfl
-  have hp := Hawk.signing_correctness R B hB hBinv Q hQ h x hh hx
+  have hn := Hawk.signing_correctness_sign_mod m hm R B hBinv Q hQ h x hx hdiv
   have hxtrace : Hawk.traceSq x = coeffSqR k a := by
     rw [htraceBridge, hxcoeff]
     exact cyclotomicTraceSq_coeffVector (E := E) k a
-  refine ⟨hp.1, hp.2.1, hp.2.2.1, hp.2.2.2.1, ?_, ?_⟩
+  refine ⟨hn.1, hn.2.1, hn.2.2.1, hn.2.2.2.1, ?_, ?_⟩
   · rw [hpublicBridge]
-    exact hp.2.2.2.2.1.trans hxtrace
+    exact hn.2.2.2.2.1.trans hxtrace
   · unfold cyclotomicPublicLength coeffLength
-    rw [hpublicBridge, hp.2.2.2.2.1, hxtrace]
+    rw [hpublicBridge, hn.2.2.2.2.1, hxtrace]
 
-/-- The sign-flipped branch of cyclotomic signing correctness. -/
+/-- In HAWK the additional divisibility condition has witness h itself. -/
 theorem signing_correctness_sign_coeff_norm (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E]
     (R : Subring E) (B : (Matrix ι ι E)ˣ)
@@ -225,34 +293,13 @@ theorem signing_correctness_sign_coeff_norm (k : ℕ)
       (↑B : Matrix ι ι E) *ᵥ (-Hawk.preimage B x) = -x ∧
       cyclotomicPublicSq (E := E) k Q (h - (2 : E) • (h - s)) = coeffSqR k a ∧
       cyclotomicPublicLength (E := E) k Q (h - (2 : E) • (h - s)) = coeffLength k a := by
-  letI := IsCyclotomicExtension.finiteDimensional {hawkConductor k} ℚ E
-  letI : StarRing E := cyclotomicStarRing (E := E) k
-  dsimp only
-  let Q := cyclotomicGram (E := E) k (↑B : Matrix ι ι E)
-  have hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E) := by
-    rfl
-  have hnorm (y : E) :
-      Hawk.normalizedTrace y = cyclotomicTraceR (E := E) k y := by
-    simp [Hawk.normalizedTrace, cyclotomicTraceR, normalizedTraceQ,
-      finrank_hawkCyclotomic (E := E) k, smul_eq_mul]
-  have htraceBridge (v : ι → E) :
-      Hawk.traceSq v = cyclotomicTraceSq (E := E) k v := by
-    unfold Hawk.traceSq cyclotomicTraceSq
-    rw [hnorm]
-    rfl
-  have hpublicBridge (v : ι → E) :
-      cyclotomicPublicSq (E := E) k Q v = Hawk.publicSq Q v := by
-    unfold cyclotomicPublicSq Hawk.publicSq
-    rw [← hnorm]
-    rfl
-  have hn := Hawk.signing_correctness_sign R B hBinv Q hQ h x hh hx
-  have hxtrace : Hawk.traceSq x = coeffSqR k a := by
-    rw [htraceBridge, hxcoeff]
-    exact cyclotomicTraceSq_coeffVector (E := E) k a
-  refine ⟨hn.1, hn.2.1, hn.2.2.1, hn.2.2.2.1, ?_, ?_⟩
-  · rw [hpublicBridge]
-    exact hn.2.2.2.2.1.trans hxtrace
-  · unfold cyclotomicPublicLength coeffLength
-    rw [hpublicBridge, hn.2.2.2.2.1, hxtrace]
+  have hdiv : Hawk.DivisibleVec R 2 ((2 : E) • h) := ⟨h, hh, rfl⟩
+  have hn := signing_correctness_sign_mod_coeff_norm 2 (by decide) k R B hBinv
+    h x hx hdiv a hxcoeff
+  have hflip : Hawk.flippedSignatureMod 2 B h x = h - Hawk.signature B h x :=
+    (Hawk.flipped_signature_eq_half B h x).symm
+  dsimp only at hn ⊢
+  rw [hflip] at hn
+  exact hn
 
 end Hawk.CyclotomicSigning

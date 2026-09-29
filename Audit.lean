@@ -70,6 +70,12 @@ run_cmd do
 #check Hawk.signature_integral
 #print axioms Hawk.signature_integral
 
+#check Hawk.signature_integral_mod
+#print axioms Hawk.signature_integral_mod
+
+#check Hawk.flipped_signature_integral_iff
+#print axioms Hawk.flipped_signature_integral_iff
+
 #check Hawk.preimage_integral
 #print axioms Hawk.preimage_integral
 
@@ -81,6 +87,12 @@ run_cmd do
 
 #check Hawk.signing_correctness_sign
 #print axioms Hawk.signing_correctness_sign
+
+#check Hawk.signing_correctness_mod
+#print axioms Hawk.signing_correctness_mod
+
+#check Hawk.signing_correctness_sign_mod
+#print axioms Hawk.signing_correctness_sign_mod
 
 #check Hawk.signing_correctness_over_ring
 #print axioms Hawk.signing_correctness_over_ring
@@ -99,3 +111,12 @@ run_cmd do
 
 #check Hawk.CyclotomicSigning.signing_correctness_sign_coeff_norm
 #print axioms Hawk.CyclotomicSigning.signing_correctness_sign_coeff_norm
+
+#check Hawk.CyclotomicSigning.signing_correctness_mod_coeff_norm
+#print axioms Hawk.CyclotomicSigning.signing_correctness_mod_coeff_norm
+
+#check Hawk.CyclotomicSigning.signing_correctness_sign_mod_coeff_norm
+#print axioms Hawk.CyclotomicSigning.signing_correctness_sign_mod_coeff_norm
+
+#check Hawk.Examples.modulus_three_counterexample
+#print axioms Hawk.Examples.modulus_three_counterexample
