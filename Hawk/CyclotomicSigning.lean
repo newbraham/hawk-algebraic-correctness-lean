@@ -163,9 +163,8 @@ rather than only an equality of abstract trace expressions.
 theorem signing_correctness_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E]
     (R : Subring E) (B : (Matrix ι ι E)ˣ)
-    (hB : Hawk.IntegralMat R (↑B : Matrix ι ι E))
     (hBinv : Hawk.IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
-    (h x : ι → E) (hh : Hawk.IntegralVec R h)
+    (h x : ι → E)
     (hx : Hawk.InSigningCosetMod m R (↑B : Matrix ι ι E) h x)
     (a : ι → Fin (hawkDegree k) → ℚ)
     (hxcoeff : x = coeffVector (E := E) k a) :
@@ -198,7 +197,7 @@ theorem signing_correctness_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)
     unfold cyclotomicPublicSq Hawk.publicSq
     rw [← hnorm]
     rfl
-  have hp := Hawk.signing_correctness_mod m hm R B hB hBinv Q hQ h x hh hx
+  have hp := Hawk.signing_correctness_mod m hm R B hBinv Q hQ h x hx
   have hxtrace : Hawk.traceSq x = coeffSqR k a := by
     rw [htraceBridge, hxcoeff]
     exact cyclotomicTraceSq_coeffVector (E := E) k a
@@ -212,9 +211,8 @@ theorem signing_correctness_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)
 theorem signing_correctness_coeff_norm (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E]
     (R : Subring E) (B : (Matrix ι ι E)ˣ)
-    (hB : Hawk.IntegralMat R (↑B : Matrix ι ι E))
     (hBinv : Hawk.IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
-    (h x : ι → E) (hh : Hawk.IntegralVec R h)
+    (h x : ι → E)
     (hx : Hawk.InSigningCoset R (↑B : Matrix ι ι E) h x)
     (a : ι → Fin (hawkDegree k) → ℚ)
     (hxcoeff : x = coeffVector (E := E) k a) :
@@ -227,7 +225,37 @@ theorem signing_correctness_coeff_norm (k : ℕ)
       (↑B : Matrix ι ι E) *ᵥ w = x ∧
       cyclotomicPublicSq (E := E) k Q (h - (2 : E) • s) = coeffSqR k a ∧
       cyclotomicPublicLength (E := E) k Q (h - (2 : E) • s) = coeffLength k a :=
-  signing_correctness_mod_coeff_norm 2 (by decide) k R B hB hBinv h x hh hx a hxcoeff
+  signing_correctness_mod_coeff_norm 2 (by decide) k R B hBinv h x hx a hxcoeff
+
+/--
+A HAWK-shaped wrapper for the deterministic algebraic core: rank two,
+modulus two, and a basis invertible over the coefficient subring.  The
+sampling/coset witness and the coefficient representation of the sampled
+vector remain explicit input obligations.
+-/
+theorem hawk_rank2_algebraic_correctness (k : ℕ)
+    [IsCyclotomicExtension {hawkConductor k} ℚ E]
+    (R : Subring E) (B₀ : (Matrix (Fin 2) (Fin 2) R)ˣ)
+    (h₀ : Fin 2 → R) (x : Fin 2 → E)
+    (hx : Hawk.InSigningCoset R
+      (↑(Hawk.ambientBasis R B₀) : Matrix (Fin 2) (Fin 2) E)
+      (fun i => (h₀ i : E)) x)
+    (a : Fin 2 → Fin (hawkDegree k) → ℚ)
+    (hxcoeff : x = coeffVector (E := E) k a) :
+    let B := Hawk.ambientBasis R B₀
+    let h : Fin 2 → E := fun i => (h₀ i : E)
+    let Q := cyclotomicGram (E := E) k (↑B : Matrix (Fin 2) (Fin 2) E)
+    let w := Hawk.preimage B x
+    let s := Hawk.signature B h x
+    Hawk.IntegralVec R s ∧
+      h - w = (2 : E) • s ∧
+      h - (2 : E) • s = w ∧
+      (↑B : Matrix (Fin 2) (Fin 2) E) *ᵥ w = x ∧
+      cyclotomicPublicSq (E := E) k Q (h - (2 : E) • s) = coeffSqR k a ∧
+      cyclotomicPublicLength (E := E) k Q (h - (2 : E) • s) = coeffLength k a := by
+  dsimp only
+  exact signing_correctness_coeff_norm (E := E) k R (Hawk.ambientBasis R B₀)
+    (Hawk.ambientBasis_inv_integral R B₀) (fun i => (h₀ i : E)) x hx a hxcoeff
 
 /-- The cyclotomic sign branch at general modulus requires `2h ∈ mR^ι`. -/
 theorem signing_correctness_sign_mod_coeff_norm (m : ℕ) (hm : m ≠ 0) (k : ℕ)

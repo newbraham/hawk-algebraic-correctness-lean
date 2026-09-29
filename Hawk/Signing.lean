@@ -282,13 +282,13 @@ theorem publicLength_neg (Q : Matrix ι ι E) (v : ι → E) :
   rw [publicSq_neg]
 
 /-- Exact division, integrality and Gram transport for any positive integer
-modulus. The hypotheses on B and h retain the coefficient-ring interface. -/
+modulus. The normal branch needs only integrality of the inverse basis and the
+integral signing-coset witness. -/
 theorem signing_correctness_mod (m : ℕ) (hm : m ≠ 0)
     (R : Subring E) (B : (Matrix ι ι E)ˣ)
-    (_hB : IntegralMat R (↑B : Matrix ι ι E))
     (hBinv : IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
     (Q : Matrix ι ι E) (hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E))
-    (h x : ι → E) (_hh : IntegralVec R h)
+    (h x : ι → E)
     (hx : InSigningCosetMod m R (↑B : Matrix ι ι E) h x) :
     IntegralVec R (signatureMod m B h x) ∧
     h - preimage B x = (m : E) • signatureMod m B h x ∧
@@ -303,10 +303,9 @@ theorem signing_correctness_mod (m : ℕ) (hm : m ≠ 0)
 
 /-- HAWK correctness is obtained by specializing the modulus to two. -/
 theorem signing_correctness (R : Subring E) (B : (Matrix ι ι E)ˣ)
-    (hB : IntegralMat R (↑B : Matrix ι ι E))
     (hBinv : IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
     (Q : Matrix ι ι E) (hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E))
-    (h x : ι → E) (hh : IntegralVec R h)
+    (h x : ι → E)
     (hx : InSigningCoset R (↑B : Matrix ι ι E) h x) :
     IntegralVec R (signature B h x) ∧
     h - preimage B x = (2 : E) • signature B h x ∧
@@ -314,7 +313,7 @@ theorem signing_correctness (R : Subring E) (B : (Matrix ι ι E)ˣ)
     (↑B : Matrix ι ι E) *ᵥ preimage B x = x ∧
     publicSq Q (h - (2 : E) • signature B h x) = traceSq x ∧
     publicLength Q (h - (2 : E) • signature B h x) = traceLength x :=
-  signing_correctness_mod 2 (by decide) R B hB hBinv Q hQ h x hh hx
+  signing_correctness_mod 2 (by decide) R B hBinv Q hQ h x hx
 
 /-- The sign branch for general modulus, with the exact additional condition
 `2h ∈ mR^ι`. The metric equalities use the same generic Gram lemmas. -/
@@ -361,7 +360,6 @@ theorem signing_correctness_sign (R : Subring E) (B : (Matrix ι ι E)ˣ)
   exact hn
 
 theorem verification_bound (R : Subring E) (B : (Matrix ι ι E)ˣ)
-    (hB : IntegralMat R (↑B : Matrix ι ι E))
     (hBinv : IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
     (Q : Matrix ι ι E) (hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E))
     (h x : ι → E) (hh : IntegralVec R h)
@@ -369,13 +367,13 @@ theorem verification_bound (R : Subring E) (B : (Matrix ι ι E)ˣ)
     (bound : ℝ) (hbound : traceSq x ≤ bound) :
     publicSq Q (h - (2 : E) • signature B h x) ≤ bound ∧
     publicSq Q (h - (2 : E) • (h - signature B h x)) ≤ bound := by
-  have hp := signing_correctness R B hB hBinv Q hQ h x hh hx
+  have hp := signing_correctness R B hBinv Q hQ h x hx
   have hn := signing_correctness_sign R B hBinv Q hQ h x hh hx
   exact ⟨hp.2.2.2.2.1.le.trans hbound, hn.2.2.2.2.1.le.trans hbound⟩
 
 /-- Direct rank-r interface with B over R and a returned signature in R^r.
 All entrywise membership properties follow from the input types. -/
-theorem signing_correctness_over_ring (r : ℕ) (_hr : 1 ≤ r)
+theorem signing_correctness_over_ring (r : ℕ)
     (R : Subring E) (B₀ : (Matrix (Fin r) (Fin r) R)ˣ)
     (h₀ : Fin r → R) (x : Fin r → E)
     (hx : InSigningCoset R (↑(ambientBasis R B₀) : Matrix (Fin r) (Fin r) E)
@@ -395,8 +393,8 @@ theorem signing_correctness_over_ring (r : ℕ) (_hr : 1 ≤ r)
   let B := ambientBasis R B₀
   let h : Fin r → E := fun i => (h₀ i : E)
   have hh : IntegralVec R h := fun i => (h₀ i).property
-  have hp := signing_correctness R B (ambientBasis_integral R B₀)
-    (ambientBasis_inv_integral R B₀) _ rfl h x hh hx
+  have hp := signing_correctness R B
+    (ambientBasis_inv_integral R B₀) _ rfl h x hx
   have hn := signing_correctness_sign R B (ambientBasis_inv_integral R B₀)
     _ rfl h x hh hx
   refine ⟨fun i => ⟨signature B h x i, hp.1 i⟩, rfl, ?_, ?_, ?_, ?_, ?_⟩

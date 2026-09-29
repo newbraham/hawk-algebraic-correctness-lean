@@ -109,6 +109,9 @@ run_cmd do
 #check Hawk.CyclotomicSigning.signing_correctness_coeff_norm
 #print axioms Hawk.CyclotomicSigning.signing_correctness_coeff_norm
 
+#check Hawk.CyclotomicSigning.hawk_rank2_algebraic_correctness
+#print axioms Hawk.CyclotomicSigning.hawk_rank2_algebraic_correctness
+
 #check Hawk.CyclotomicSigning.signing_correctness_sign_coeff_norm
 #print axioms Hawk.CyclotomicSigning.signing_correctness_sign_coeff_norm
 
