@@ -301,7 +301,7 @@ theorem signing_correctness_mod (m : ℕ) (hm : m ≠ 0)
   · rw [reconstruction_mod m hm, hQ, publicSq_gram, basis_preimage]
   · rw [reconstruction_mod m hm, hQ, publicLength_gram, basis_preimage]
 
-/-- HAWK correctness is obtained by specializing the modulus to two. -/
+/-- The modulus-two algebraic signing interface used by HAWK. -/
 theorem signing_correctness (R : Subring E) (B : (Matrix ι ι E)ˣ)
     (hBinv : IntegralMat R (↑(B⁻¹) : Matrix ι ι E))
     (Q : Matrix ι ι E) (hQ : Q = (↑B : Matrix ι ι E)ᴴ * (↑B : Matrix ι ι E))

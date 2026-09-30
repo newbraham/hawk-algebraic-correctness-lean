@@ -4,10 +4,9 @@ import Hawk
 ## Statements being certified
 
 The explicit statements below remain readable audit output. In addition, the
-automatic audit checks every user-facing declaration in the `Hawk` namespace,
+automatic audit checks every `Hawk` declaration selected by the filter below,
 including private declarations after recovering their user names, against the
-standard axiom list. Compiler-generated helpers whose names live outside
-`Hawk` are excluded.
+standard axiom list. Compiler-generated/internal helpers are excluded.
 -/
 
 open Lean in
@@ -120,6 +119,51 @@ run_cmd do
 
 #check Hawk.CyclotomicSigning.signing_correctness_sign_mod_coeff_norm
 #print axioms Hawk.CyclotomicSigning.signing_correctness_sign_mod_coeff_norm
+
+#check Hawk.Concrete.keyBasis
+#print axioms Hawk.Concrete.keyBasis
+
+#check Hawk.Concrete.coeffExpansion_coeffs
+#print axioms Hawk.Concrete.coeffExpansion_coeffs
+
+#check Hawk.Concrete.coeffVector_vectorCoeffs
+#print axioms Hawk.Concrete.coeffVector_vectorCoeffs
+
+#check Hawk.Concrete.cosetPoint_in_coset
+#print axioms Hawk.Concrete.cosetPoint_in_coset
+
+#check Hawk.Concrete.signing_correctness_mod_coeff_norm_auto
+#print axioms Hawk.Concrete.signing_correctness_mod_coeff_norm_auto
+
+#check Hawk.Concrete.hawk_rank2_algebraic_interface
+#print axioms Hawk.Concrete.hawk_rank2_algebraic_interface
+
+#check Hawk.Functional.symBreak_canonicalW
+#print axioms Hawk.Functional.symBreak_canonicalW
+
+#check Hawk.Functional.decompress_compress_of_rebuild
+#print axioms Hawk.Functional.decompress_compress_of_rebuild
+
+#check Hawk.Functional.canonicalSignature_integral
+#print axioms Hawk.Functional.canonicalSignature_integral
+
+#check Hawk.Functional.reconstruction_canonicalSignature
+#print axioms Hawk.Functional.reconstruction_canonicalSignature
+
+#check Hawk.Functional.canonicalSignature_symBreak
+#print axioms Hawk.Functional.canonicalSignature_symBreak
+
+#check Hawk.Functional.canonicalSignature_publicSq
+#print axioms Hawk.Functional.canonicalSignature_publicSq
+
+#check Hawk.Functional.PostHashChecks
+#print axioms Hawk.Functional.PostHashChecks
+
+#check Hawk.Functional.postHashChecks_compress
+#print axioms Hawk.Functional.postHashChecks_compress
+
+#check Hawk.Functional.hawk_rank2_conditional_postHash_acceptance
+#print axioms Hawk.Functional.hawk_rank2_conditional_postHash_acceptance
 
 #check Hawk.Examples.modulus_three_counterexample
 #print axioms Hawk.Examples.modulus_three_counterexample
