@@ -8,6 +8,10 @@ Lean 4 formalization of the deterministic algebraic correctness layer used by HA
 - `Hawk/Signing.lean` proves exact division, subring integrality, reconstruction, and Gram transport for every positive integer modulus in arbitrary module rank. It characterizes integrality after sign reversal and derives the HAWK theorems at modulus two.
 - `Hawk/CyclotomicSigning.lean` combines the generic signing results with the cyclotomic trace identity.
 - `Hawk/Concrete.lean` constructs the concrete coefficient subring `ℤ[ζ]`, the rank-two HAWK basis from the NTRU relation `fG-gF=1`, a constructor from an explicit signing-coset witness to the corresponding point, and canonical rational power-basis coordinate extraction.
+- `Hawk/IntegralCoefficients.lean` constructs the integral power basis of `ℤ[ζ]`, proves its degree is `2^k`, and characterizes membership in `ℤ[ζ]` by integrality of all rational power-basis coordinates.
+- `Hawk/PolynomialQuotient.lean` proves `Φ_(2^(k+1))(X) = X^(2^k) + 1` over `ℤ`, identifies this with the primitive root's minimal polynomial, and constructs an explicit ring isomorphism `ℤ[X]/(X^(2^k) + 1) ≃ ℤ[ζ]`.
+- `Hawk/Geometry.lean` proves nonnegativity and definiteness of the cyclotomic trace squared norm, as well as positive definiteness of the Gram form for invertible secret bases.
+- `Hawk/PublicKey.lean` proves that conjugation preserves `ℤ[ζ]`, that the public Gram entries stay integral, that the public matrix is Hermitian, and gives its four rank-two entries explicitly.
 - `Hawk/FunctionalCorrectness.lean` formalizes the deterministic sign choice, a failure-aware projection/rebuild interface, the symmetry-breaking check, and their conditional composition with post-hash deterministic checks.
 - `Hawk/Examples.lean` contains eight exact rational sanity checks and a modulus-three counterexample showing that preservation of the metric does not imply integrality of the sign-flipped candidate.
 - `Audit.lean` checks the axiom dependencies of the declarations in the `Hawk` namespace.
@@ -61,6 +65,47 @@ Hawk.CyclotomicTrace.cyclotomic_trace_coeff_sq
 ```
 
 `TraceOrthogonality` is used as an intermediate predicate; the concrete endpoint theorems discharge it.
+
+### Integral coordinates and positive-definite public keys
+
+The integral basis of `ℤ[ζ]` is the power basis `1, ζ, …, ζ^(n-1)`. The development
+proves both directions of the exact characterization
+
+$$
+x\in\mathbb Z[\zeta]\quad\Longleftrightarrow\quad
+\forall i<n,\ \operatorname{coeffs}(x)_i\in\mathbb Z.
+$$
+
+This closes the integrality gap for **canonical power-basis coordinates**.
+The polynomial presentation is also formalized via the cyclotomic minimal
+polynomial and Mathlib's `AdjoinRoot` (the quotient by a principal polynomial
+ideal):
+
+$$
+\mathbb Z[X]/(X^n+1)\ \cong\ \mathbb Z[\zeta_{2n}],\qquad n=2^k.
+$$
+
+For arbitrary vectors, the cyclotomic trace squared norm is nonnegative and
+vanishes exactly at zero. If `Q = BᴴB` with invertible `B`, the public squared
+quadratic form is likewise positive definite. Integrality of `Q` follows from
+integrality of `B` and closure of `ℤ[ζ]` under cyclotomic conjugation.
+
+Important declarations:
+
+```lean
+Hawk.IntegralCoefficients.integralHawkBasis_apply
+Hawk.IntegralCoefficients.coeffs_integral
+Hawk.IntegralCoefficients.mem_coeffRing_iff_coeffs_integral
+Hawk.PolynomialQuotient.cyclotomic_hawk_eq
+Hawk.PolynomialQuotient.quotientRingEquiv
+Hawk.Geometry.traceSq_nonneg
+Hawk.Geometry.traceSq_eq_zero_iff
+Hawk.Geometry.publicSq_gram_eq_zero_iff
+Hawk.PublicKey.gram_entries_integral
+Hawk.PublicKey.gram_hermitian
+Hawk.PublicKey.keyMatrix_gram
+Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
+```
 
 ## Signing correctness for arbitrary rank and modulus
 

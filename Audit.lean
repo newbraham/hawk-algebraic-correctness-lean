@@ -126,6 +126,69 @@ run_cmd do
 #check Hawk.Concrete.coeffExpansion_coeffs
 #print axioms Hawk.Concrete.coeffExpansion_coeffs
 
+#check Hawk.Concrete.coeffs_coeffExpansion
+#print axioms Hawk.Concrete.coeffs_coeffExpansion
+
+#check Hawk.CyclotomicSigning.coeffSqQ_eq_zero_iff
+#print axioms Hawk.CyclotomicSigning.coeffSqQ_eq_zero_iff
+
+#check Hawk.CyclotomicSigning.coeffSqR_eq_zero_iff
+#print axioms Hawk.CyclotomicSigning.coeffSqR_eq_zero_iff
+
+#check Hawk.Geometry.traceSq_nonneg
+#print axioms Hawk.Geometry.traceSq_nonneg
+
+#check Hawk.Geometry.traceSq_eq_zero_iff
+#print axioms Hawk.Geometry.traceSq_eq_zero_iff
+
+#check Hawk.Geometry.publicSq_gram_nonneg
+#print axioms Hawk.Geometry.publicSq_gram_nonneg
+
+#check Hawk.Geometry.publicSq_gram_eq_zero_iff
+#print axioms Hawk.Geometry.publicSq_gram_eq_zero_iff
+
+#check Hawk.PublicKey.conjugation_mem_coeffRing
+#print axioms Hawk.PublicKey.conjugation_mem_coeffRing
+
+#check Hawk.PublicKey.gram_entries_integral
+#print axioms Hawk.PublicKey.gram_entries_integral
+
+#check Hawk.PublicKey.gram_hermitian
+#print axioms Hawk.PublicKey.gram_hermitian
+
+#check Hawk.PublicKey.keyMatrix_gram
+#print axioms Hawk.PublicKey.keyMatrix_gram
+
+#check Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
+#print axioms Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
+
+#check Hawk.IntegralCoefficients.integralPowerBasis_dim
+#print axioms Hawk.IntegralCoefficients.integralPowerBasis_dim
+
+#check Hawk.IntegralCoefficients.integralHawkBasis_apply
+#print axioms Hawk.IntegralCoefficients.integralHawkBasis_apply
+
+#check Hawk.IntegralCoefficients.integer_coeffExpansion
+#print axioms Hawk.IntegralCoefficients.integer_coeffExpansion
+
+#check Hawk.IntegralCoefficients.coeffs_integral
+#print axioms Hawk.IntegralCoefficients.coeffs_integral
+
+#check Hawk.IntegralCoefficients.mem_coeffRing_iff_coeffs_integral
+#print axioms Hawk.IntegralCoefficients.mem_coeffRing_iff_coeffs_integral
+
+#check Hawk.PolynomialQuotient.cyclotomic_hawk_eq
+#print axioms Hawk.PolynomialQuotient.cyclotomic_hawk_eq
+
+#check Hawk.PolynomialQuotient.minpoly_hawkZeta
+#print axioms Hawk.PolynomialQuotient.minpoly_hawkZeta
+
+#check Hawk.PolynomialQuotient.adjoinRootEquiv
+#print axioms Hawk.PolynomialQuotient.adjoinRootEquiv
+
+#check Hawk.PolynomialQuotient.quotientRingEquiv
+#print axioms Hawk.PolynomialQuotient.quotientRingEquiv
+
 #check Hawk.Concrete.coeffVector_vectorCoeffs
 #print axioms Hawk.Concrete.coeffVector_vectorCoeffs
 

@@ -109,6 +109,17 @@ theorem coeffExpansion_coeffs (k : ℕ)
           rw [hawkBasis_apply]
     _ = x := (hawkBasis (E := E) k).sum_repr x
 
+/-- Extracting coefficients from a power-basis expansion returns those coefficients. -/
+theorem coeffs_coeffExpansion (k : ℕ)
+    [IsCyclotomicExtension {hawkConductor k} ℚ E]
+    (a : Fin (hawkDegree k) → ℚ) :
+    coeffs (E := E) k (coeffExpansion (hawkZeta (E := E) k) a) = a := by
+  unfold coeffs coeffExpansion
+  change (fun i => ((hawkBasis (E := E) k).repr
+    (∑ j, a j • (hawkZeta (E := E) k) ^ (j : ℕ))) i) = a
+  simpa only [← hawkBasis_apply] using
+    (hawkBasis (E := E) k).repr_sum_self a
+
 /-- Coefficients of a whole module vector. -/
 def vectorCoeffs {ι : Type*} (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E]

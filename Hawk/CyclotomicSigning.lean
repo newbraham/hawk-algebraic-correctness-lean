@@ -95,6 +95,32 @@ def coeffSqR (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) : ℝ :=
 def coeffLength (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) : ℝ :=
   Real.sqrt (coeffSqR k a)
 
+/-- The rational squared coefficient norm is nonnegative. -/
+theorem coeffSqQ_nonneg (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) :
+    0 ≤ coeffSqQ k a := by
+  unfold coeffSqQ
+  exact Finset.sum_nonneg (fun i _ => Finset.sum_nonneg (fun j _ => sq_nonneg (a i j)))
+
+/-- The rational coefficient norm vanishes precisely on the zero vector. -/
+theorem coeffSqQ_eq_zero_iff (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) :
+    coeffSqQ k a = 0 ↔ ∀ i j, a i j = 0 := by
+  unfold coeffSqQ
+  simp only [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ =>
+    Finset.sum_nonneg (fun _ _ => sq_nonneg _)), Finset.mem_univ, true_implies]
+  simp only [Finset.sum_eq_zero_iff_of_nonneg (fun _ _ => sq_nonneg _),
+    Finset.mem_univ, true_implies, sq_eq_zero_iff]
+
+/-- The real squared coefficient norm is nonnegative. -/
+theorem coeffSqR_nonneg (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) :
+    0 ≤ coeffSqR k a := by
+  change (0 : ℝ) ≤ (coeffSqQ k a : ℝ)
+  exact_mod_cast coeffSqQ_nonneg k a
+
+/-- The real squared coefficient norm is definite. -/
+theorem coeffSqR_eq_zero_iff (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) :
+    coeffSqR k a = 0 ↔ ∀ i j, a i j = 0 := by
+  simp only [coeffSqR, Rat.cast_eq_zero, coeffSqQ_eq_zero_iff]
+
 /--
 Concrete normalized trace as a real number, using the A.1 normalization `1/n`.
 -/
