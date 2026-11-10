@@ -159,6 +159,15 @@ run_cmd do
 #check Hawk.PublicKey.keyMatrix_gram
 #print axioms Hawk.PublicKey.keyMatrix_gram
 
+#check Hawk.PublicKey.keyMatrix_gram_det
+#print axioms Hawk.PublicKey.keyMatrix_gram_det
+
+#check Hawk.PublicKey.keyMatrix_gram_entries
+#print axioms Hawk.PublicKey.keyMatrix_gram_entries
+
+#check Hawk.PublicKey.keyMatrix_gram_entry11
+#print axioms Hawk.PublicKey.keyMatrix_gram_entry11
+
 #check Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
 #print axioms Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
 

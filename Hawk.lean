@@ -1,10 +1,2 @@
-import Hawk.CyclotomicTrace
-import Hawk.Signing
-import Hawk.CyclotomicSigning
-import Hawk.Concrete
-import Hawk.Geometry
-import Hawk.PublicKey
-import Hawk.IntegralCoefficients
-import Hawk.PolynomialQuotient
-import Hawk.FunctionalCorrectness
-import Hawk.Examples
+import Hawk.Core
+import Hawk.Supplementary

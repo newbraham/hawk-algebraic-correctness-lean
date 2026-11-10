@@ -4,16 +4,22 @@ Lean 4 formalization of the deterministic algebraic correctness layer used by HA
 
 ## Structure
 
+`Hawk.Core` imports the formal development without the examples;
+`Hawk.Supplementary` imports the sanity checks and counterexample. `Hawk`
+imports both. Geometry and public-key results live under `Hawk/Core/`, while
+examples live under `Hawk/Supplementary/`. The original module paths remain
+available as compatibility imports. Other modules retain their current paths.
+
 - `Hawk/CyclotomicTrace.lean` proves the normalized cyclotomic trace/coefficient inner-product identity for the power-of-two cyclotomic field.
 - `Hawk/Signing.lean` proves exact division, subring integrality, reconstruction, and Gram transport for every positive integer modulus in arbitrary module rank. It characterizes integrality after sign reversal and derives the HAWK theorems at modulus two.
 - `Hawk/CyclotomicSigning.lean` combines the generic signing results with the cyclotomic trace identity.
 - `Hawk/Concrete.lean` constructs the concrete coefficient subring `ℤ[ζ]`, the rank-two HAWK basis from the NTRU relation `fG-gF=1`, a constructor from an explicit signing-coset witness to the corresponding point, and canonical rational power-basis coordinate extraction.
 - `Hawk/IntegralCoefficients.lean` constructs the integral power basis of `ℤ[ζ]`, proves its degree is `2^k`, and characterizes membership in `ℤ[ζ]` by integrality of all rational power-basis coordinates.
 - `Hawk/PolynomialQuotient.lean` proves `Φ_(2^(k+1))(X) = X^(2^k) + 1` over `ℤ`, identifies this with the primitive root's minimal polynomial, and constructs an explicit ring isomorphism `ℤ[X]/(X^(2^k) + 1) ≃ ℤ[ζ]`.
-- `Hawk/Geometry.lean` proves nonnegativity and definiteness of the cyclotomic trace squared norm, as well as positive definiteness of the Gram form for invertible secret bases.
-- `Hawk/PublicKey.lean` proves that conjugation preserves `ℤ[ζ]`, that the public Gram entries stay integral, that the public matrix is Hermitian, and gives its four rank-two entries explicitly.
+- `Hawk/Core/Geometry.lean` proves nonnegativity and definiteness of the cyclotomic trace squared norm, as well as positive definiteness of the Gram form for invertible secret bases.
+- `Hawk/Core/PublicKey.lean` proves that conjugation preserves `ℤ[ζ]`, that the public Gram entries stay integral, that the public matrix is Hermitian, and gives its four rank-two entries explicitly.
 - `Hawk/FunctionalCorrectness.lean` formalizes the deterministic sign choice, a failure-aware projection/rebuild interface, the symmetry-breaking check, and their conditional composition with post-hash deterministic checks.
-- `Hawk/Examples.lean` contains eight exact rational sanity checks and a modulus-three counterexample showing that preservation of the metric does not imply integrality of the sign-flipped candidate.
+- `Hawk/Supplementary/Examples.lean` contains eight exact rational sanity checks and a modulus-three counterexample showing that preservation of the metric does not imply integrality of the sign-flipped candidate.
 - `Audit.lean` checks the axiom dependencies of the declarations in the `Hawk` namespace.
 
 ## Toolchain
@@ -73,7 +79,7 @@ proves both directions of the exact characterization
 
 $$
 x\in\mathbb Z[\zeta]\quad\Longleftrightarrow\quad
-\forall i<n,\ \operatorname{coeffs}(x)_i\in\mathbb Z.
+\forall i<n,\ \mathrm{coeffs}(x)_i\in\mathbb Z.
 $$
 
 This closes the integrality gap for **canonical power-basis coordinates**.
@@ -90,6 +96,15 @@ vanishes exactly at zero. If `Q = BᴴB` with invertible `B`, the public squared
 quadratic form is likewise positive definite. Integrality of `Q` follows from
 integrality of `B` and closure of `ℤ[ζ]` under cyclotomic conjugation.
 
+For a rank-two key satisfying `fG-gF=1`, the public Gram determinant is one:
+
+$$
+\det Q=1,\qquad q_{00}q_{11}-q_{01}q_{10}=1.
+$$
+
+If $q_{00}\ne0$, this gives $q_{11}=(1+q_{01}q_{10})/q_{00}$.
+This field identity does not implement the signature-rebuilding algorithm.
+
 Important declarations:
 
 ```lean
@@ -104,6 +119,9 @@ Hawk.Geometry.publicSq_gram_eq_zero_iff
 Hawk.PublicKey.gram_entries_integral
 Hawk.PublicKey.gram_hermitian
 Hawk.PublicKey.keyMatrix_gram
+Hawk.PublicKey.keyMatrix_gram_det
+Hawk.PublicKey.keyMatrix_gram_entries
+Hawk.PublicKey.keyMatrix_gram_entry11
 Hawk.PublicKey.keyMatrix_gram_eq_zero_iff
 ```
 
@@ -190,7 +208,7 @@ $$
 B=\begin{pmatrix}f&F\\g&G\end{pmatrix}\in\mathrm{GL}_2(\mathbb Z[\zeta])
 $$
 
-directly from the NTRU relation $fG-gF=1$, and proves the explicit inverse has coefficients in the same subring. A point explicitly supplied in the deterministic support form $x=Bh+2z$ automatically yields the signing-coset witness; the Gaussian sampler/distribution itself is not modeled. Canonical **rational** power-basis coordinates are extracted from every field element, so the final coefficient-norm endpoint no longer requires a separate hypothesis `x = coeffVector a`. The development does not separately prove that these coordinates are integral for every member of `ℤ[ζ]`.
+directly from the NTRU relation $fG-gF=1$, and proves the explicit inverse has coefficients in the same subring. A point explicitly supplied in the deterministic support form $x=Bh+2z$ automatically yields the signing-coset witness; the Gaussian sampler/distribution itself is not modeled. Canonical **rational** power-basis coordinates are extracted from every field element, so the final coefficient-norm endpoint no longer requires a separate hypothesis `x = coeffVector a`. `Hawk.IntegralCoefficients` proves that these coordinates are integral for every member of `ℤ[ζ]`.
 
 Main declarations:
 
@@ -234,4 +252,4 @@ The CI audit also fails if `sorryAx`, `Lean.ofReduceBool`, or `Lean.trustCompile
 
 ## Scope
 
-The formalization covers deterministic algebraic reconstruction through a conditional post-hash acceptance interface, including the concrete rank-two basis construction, an explicit signing-coset point, rational coefficient extraction, sign canonicalization, and failure-aware abstract rebuilding. It does **not** formalize the Gaussian sampler or prove that a sampler execution yields the coset witness, implement the fixed-point/rounding `RebuildS0`, prove the binary hash-output restriction, derive external validity or the norm bound, formalize hashing/encoding, restart/failure probabilities, security reductions, or side channels. The coefficient subring is constructed as `ℤ[ζ]`, but the development does not yet prove that its canonical rational power-basis coordinates are integer coordinates; that representation bridge is intentionally left for future work. Generalizing the modulus demonstrates reuse of the algebraic interfaces; it does not define or establish the security of another signature scheme.
+The formalization covers deterministic algebraic reconstruction through a conditional post-hash acceptance interface, including the concrete rank-two basis construction, an explicit signing-coset point, rational coefficient extraction, sign canonicalization, and failure-aware abstract rebuilding. It does **not** formalize the Gaussian sampler or prove that a sampler execution yields the coset witness, implement the fixed-point/rounding `RebuildS0`, prove the binary hash-output restriction, derive external validity or the norm bound, formalize hashing/encoding, restart/failure probabilities, security reductions, or side channels. The coefficient subring is constructed as `ℤ[ζ]`, and its canonical rational power-basis coordinates are proved to be integer coordinates. Generalizing the modulus demonstrates reuse of the algebraic interfaces; it does not define or establish the security of another signature scheme.
