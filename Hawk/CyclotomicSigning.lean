@@ -28,7 +28,7 @@ variable {ι : Type*} [Fintype ι]
 
 /-! ## Cyclotomic conjugation as a star operation -/
 
-/-- The cyclotomic conjugation from A.1 is an involution. -/
+/-- The cyclotomic conjugation that sends the primitive root to its inverse is involutive. -/
 theorem cyclotomicConjugation_involutive (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E] :
     Function.Involutive (cyclotomicConjugation (E := E) k) := by
@@ -48,8 +48,8 @@ theorem cyclotomicConjugation_involutive (k : ℕ)
 
 /--
 The concrete `StarRing` structure associated with the cyclotomic involution.
-It is deliberately a definition rather than a global instance: A.2 installs it
-locally, so it cannot conflict with another star structure on the ambient
+The signing and trace comparison proofs install this structure locally.
+Other developments can choose a different star operation on the ambient
 field.
 -/
 noncomputable def cyclotomicStarRing (k : ℕ)
@@ -96,7 +96,7 @@ def coeffLength (k : ℕ) (a : ι → Fin (hawkDegree k) → ℚ) : ℝ :=
   Real.sqrt (coeffSqR k a)
 
 /--
-Concrete normalized trace as a real number, using the A.1 normalization `1/n`.
+The normalized field trace, divided by the cyclotomic degree and cast to the reals.
 -/
 def cyclotomicTraceR (k : ℕ)
     [IsCyclotomicExtension {hawkConductor k} ℚ E] (y : E) : ℝ :=
